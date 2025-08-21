@@ -8,7 +8,7 @@
 \usepackage{xcolor} % Necesario para \textcolor.
 \usepackage[chorded]{songs} % Esencial para tu cancionero.
 
-\usepackage{schemata} % <-- ¡RE-AÑADIDO PARA EL COMANDO \diagram!
+% \usepackage{schemata} % <-- Eliminado para evitar dependencia no instalada
 \usepackage{pdfpages} % Para incluir PDFs como la portada.
 \usepackage[normalem]{ulem} % Para subrayado, si lo usas (ej. \uline).
 \usepackage{scrextend} % Necesario si usas \changefontsizes.
@@ -69,18 +69,18 @@
 }
 
 % --- Comandos personalizados ---
-\newcommand\diagram[2]{\schema{\schemabox{#1}}{\schemabox{#2}}} % <-- ¡DEFINICIÓN DE \diagram!
-\newcommand\esquema[2]{\schema[closed]{#2}{\schemabox{#1}}} % Si no usas este comando, puedes eliminarlo.
+% Redefinimos \diagram y \esquema para no depender de 'schemata'
+\newcommand\diagram[2]{\noindent\textbf{#1: }#2}
+\newcommand\esquema[2]{\noindent\textbf{#1: }#2}
 \newcommand{\version}{}
-\newsongkey{v}{\def\version{}}
-               {\def\version{Versión: #1\par}}
+\newsongkey{v}{\def\version{}}{\def\version{Versión: #1\par}}
 
 \newcommand\toctitle{}
 \makeatletter
-\gdef\toclink{%
-  \@ifundefined{href}{}{%
-    song\theSB@songsnum-\thesongnum.\ifnum\value{section}=0 1\else2\fi%
-  }%
+\gdef\toclink{% 
+  \@ifundefined{href}{}{% 
+    song\theSB@songsnum-\thesongnum.\ifnum\value{section}=0 1\else2\fi% 
+  }% 
 }
 \makeatother
 %indice de secciones
@@ -103,14 +103,14 @@
 
 %indice de seccioes y canciones no funciona bien
 %\newcommand\addtotoc[1]{\addtocontents{toc}{\protect\contentsline
- % {chapter}% <-- Cambiado a 'chapter' para que todas las entradas estén al mismo nivel
- % {\numberline\thesongnum#1}%
-  %{\thepage}%
-  %{\toclink}%
+% {chapter}% <-- Cambiado a 'chapter' para que todas las entradas estén al mismo nivel
+% {\numberline\thesongnum#1}%
+%  {\thepage}%
+%  {\toclink}%
 %}}
 %\newsongkey{toc}
- % {\def\toctitle{\resettitles\addtotoc\songtitle}}
-  %{\def\toctitle{\addtotoc{#1}}}
+% {\def\toctitle{\resettitles\addtotoc\songtitle}}
+%  {\def\toctitle{\addtotoc{#1}}}
 %\renewcommand\extendprelude{\showrefs\showauthors\toctitle {\bfseries\version}}
 
 %\newcommand{\indexword}[1]{\textcolor{blue}{#1}\index{#1}}
