@@ -1,0 +1,150 @@
+\documentclass[a4paper,twoside,openany]{book}
+
+% --- Configuración de codificación y idioma ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+
+% --- Paquetes generales ---
+\usepackage{xcolor} % Necesario para \textcolor.
+\usepackage[chorded]{songs} % Esencial para tu cancionero.
+
+\usepackage{schemata} % <-- ¡RE-AÑADIDO PARA EL COMANDO \diagram!
+\usepackage{pdfpages} % Para incluir PDFs como la portada.
+\usepackage[normalem]{ulem} % Para subrayado, si lo usas (ej. \uline).
+\usepackage{scrextend} % Necesario si usas \changefontsizes.
+
+% --- Configuración de geometría de la página ---
+\usepackage[a4paper,
+            top=1cm, 
+            bottom=2cm, 
+            left=2.5cm, 
+            right=1cm, 
+            headheight=1.5cm,
+            headsep=1cm,
+            footskip=1.5cm,
+            textwidth=16.5cm,
+            textheight=23.42cm,
+            showframe=false
+            ]{geometry}
+
+% --- Configuración de índices ---
+\usepackage{imakeidx}
+\makeindex[name=tema, title=Índice Temático]
+
+\makeindex[name=titleidx, title=Índice Alfabético de Canciones, columns=1] 
+
+\newindex{titleidx}{cbtitle} 
+
+\newcommand{\indexsongtitle}[1]{%
+  \phantomsection
+  \index[titleidx]{#1}%
+
+}
+
+% --- Configuración de hipervínculos ---
+\usepackage{hyperref} 
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=green,
+    urlcolor=cyan,
+    filecolor=magenta,
+    pdftitle={Mi Cancionero Temático},
+    pdfauthor={Tu Nombre},
+    pdfcreator={LaTeX with hyperref},
+    pdfproducer={LaTeX},
+    linktocpage=true
+}
+
+% --- Configuración de fuentes ---
+\changefontsizes[14pt]{11pt} 
+
+% --- Configuraciones específicas del paquete 'songs' ---
+\noversenumbers
+\baselineadj=-10pt plus 10pt minus 10pt
+\renewcommand{\clineparams}{
+  \baselineskip=35pt
+  \lineskiplimit=35pt
+  \lineskip=1pt
+}
+
+% --- Comandos personalizados ---
+\newcommand\diagram[2]{\schema{\schemabox{#1}}{\schemabox{#2}}} % <-- ¡DEFINICIÓN DE \diagram!
+\newcommand\esquema[2]{\schema[closed]{#2}{\schemabox{#1}}} % Si no usas este comando, puedes eliminarlo.
+\newcommand{\version}{}
+\newsongkey{v}{\def\version{}}
+               {\def\version{Versión: #1\par}}
+
+\newcommand\toctitle{}
+\makeatletter
+\gdef\toclink{%
+  \@ifundefined{href}{}{%
+    song\theSB@songsnum-\thesongnum.\ifnum\value{section}=0 1\else2\fi%
+  }%
+}
+\makeatother
+%indice de secciones
+\newcommand\addtotoc[1]{\addtocontents{toc}{\protect\contentsline
+ {\ifnum\value{section}>0sub\fi section}%
+{\numberline\thesongnum#1}%
+ {\thepage}%
+ {\toclink}%
+}}
+\newsongkey{toc}
+{\def\toctitle{\resettitles\addtotoc\songtitle}}
+{\def\toctitle{\addtotoc{#1}}}
+\renewcommand\extendprelude{\showrefs\showauthors\toctitle {\bfseries\version}}
+
+\newcommand{\indexword}[1]{\textcolor{blue}{#1}\index{#1}}
+
+\let\cleardoublepage\relax
+
+% Integra la clave toc al preámbulo de cada canción
+
+%indice de seccioes y canciones no funciona bien
+%\newcommand\addtotoc[1]{\addtocontents{toc}{\protect\contentsline
+ % {chapter}% <-- Cambiado a 'chapter' para que todas las entradas estén al mismo nivel
+ % {\numberline\thesongnum#1}%
+  %{\thepage}%
+  %{\toclink}%
+%}}
+%\newsongkey{toc}
+ % {\def\toctitle{\resettitles\addtotoc\songtitle}}
+  %{\def\toctitle{\addtotoc{#1}}}
+%\renewcommand\extendprelude{\showrefs\showauthors\toctitle {\bfseries\version}}
+
+%\newcommand{\indexword}[1]{\textcolor{blue}{#1}\index{#1}}
+
+\begin{document}
+
+
+\frontmatter % Inicia la sección preliminar (numeración romana por defecto, si aplica)
+
+%\begin{figure}[ht]
+%\centering
+%\includegraphics[width=\textwidth,height=\textheight,keepaspectratio]{portada.pdf}
+%\end{figure}
+%\thispagestyle{empty} % Asegura que la portada no tenga número de página
+%\clearpage % Mueve a la siguiente página (sin forzar una impar si no es necesario para el índice)
+
+
+\tableofcontents{\thispagestyle{empty}} % El índice también sin número de página
+\clearpage % Mueve a la siguiente página
+
+
+
+\mainmatter % Inicia la sección principal (reinicia la numeración a 1, arábiga)
+\pagestyle{plain} % <-- ¡NUEVA LÍNEA CLAVE! Establece el estilo de página para el cuerpo principal.
+
+
+\renewcommand{\indexname}{Índice Temático}
+\renewcommand{\everychorus}{\textnote{CORO:}}
+\renewcommand{\chorusfont}{\it}
+\renewcommand{\printchord}[1]{\rmfamily\bf#1}
+
+% --- INICIO CANCIONERO ---
+% --- FIN CANCIONERO ---
+
+\printindex[titleidx]
+\end{document}
+
