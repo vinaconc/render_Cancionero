@@ -24,6 +24,15 @@ FROM texlive/texlive:latest
 RUN tlmgr update --self && \
     tlmgr install schemata
 
+# Utiliza una imagen base con TeX Live ya instalado
+FROM blang/latex:ubuntu
+
+# Instala el paquete 'schemata' de LaTeX
+# La mayoría de las imágenes ya tienen 'tlmgr' disponible
+RUN tlmgr install schemata
+RUN tlmgr install makeindex
+
+
 WORKDIR /app
 COPY . /app    
 
@@ -43,4 +52,5 @@ EXPOSE 8000
 # Comando por defecto: usar gunicorn enlazado a $PORT
 # convert:app es el módulo:objeto WSGI
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+
 
