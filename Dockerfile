@@ -18,6 +18,15 @@ RUN apt-get update && \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+FROM texlive/texlive:latest
+
+# Instalar paquete schemata de TeX Live
+RUN tlmgr update --self && \
+    tlmgr install schemata
+
+WORKDIR /app
+COPY . /app    
+
 # Crear directorio de la app
 WORKDIR /app
 
@@ -34,3 +43,4 @@ EXPOSE 8000
 # Comando por defecto: usar gunicorn enlazado a $PORT
 # convert:app es el módulo:objeto WSGI
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+
