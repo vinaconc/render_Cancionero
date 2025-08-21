@@ -69,9 +69,18 @@
 }
 
 % --- Comandos personalizados ---
-% Redefinimos \diagram y \esquema para no depender de 'schemata'
-\newcommand\diagram[2]{\noindent\textbf{#1: }#2}
-\newcommand\esquema[2]{\noindent\textbf{#1: }#2}
+% Redefinición visual de \diagram y \esquema (sin 'schemata')
+\newcommand\diagram[2]{%
+  \par\noindent
+  \setlength{\fboxsep}{6pt}%
+  \fcolorbox{black}{gray!10}{\textsf{\bfseries #1}}\hspace{0.6em}%
+  \fcolorbox{black}{gray!5}{%
+    \begin{minipage}[t]{\dimexpr\linewidth-2\fboxrule-2\fboxsep-2em\relax}
+      #2
+    \end{minipage}%
+  }\par\vspace{0.5\baselineskip}
+}
+\newcommand\esquema[2]{\diagram{#1}{#2}}
 \newcommand{\version}{}
 \newsongkey{v}{\def\version{}}{\def\version{Versión: #1\par}}
 
