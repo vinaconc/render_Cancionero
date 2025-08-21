@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Evitar prompts interactivos de APT
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar dependencias de LaTeX necesarias (songs, schemata, hyperref, imakeidx, babel spanish), pdflatex y makeindex
+# Instalar dependencias de LaTeX necesarias (incluye songs, schemata, hyperref, imakeidx, babel spanish), pdflatex y makeindex
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         texlive-binaries \
@@ -13,6 +13,8 @@ RUN apt-get update && \
         texlive-latex-extra \
         texlive-fonts-recommended \
         texlive-lang-spanish \
+        texlive-music \
+        texlive-humanities \
         ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
