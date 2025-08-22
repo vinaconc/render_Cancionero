@@ -1,3 +1,5 @@
+FROM python:3.11-slim
+
 # Evita los prompts interactivos de APT durante la instalación.
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -26,6 +28,7 @@ EXPOSE 8000
 # Comando por defecto: usar gunicorn enlazado a $PORT
 # convert:app es el módulo:objeto WSGI
 CMD ["bash", "-c", "latexmk -pdf -interaction=nonstopmode plantilla.tex && gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+
 
 
 
