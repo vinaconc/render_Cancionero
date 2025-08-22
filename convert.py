@@ -654,13 +654,15 @@ def compilar_tex_seguro(tex_path):
 		raise RuntimeError(f"Excepción en compilación: {e}\n{logs}")
 @app.route("/", methods=["GET", "POST"])
 def index():
-	try:
-		if request.method == "POST":
-			texto = request.form.get("texto", "")
+    texto = ""  # valor por defecto
 
-			uploaded_file = request.files.get("archivo")
-    		if uploaded_file and uploaded_file.filename:
-        		texto = uploaded_file.read().decode("utf-8")
+    try:
+        if request.method == "POST":
+            texto = request.form.get("texto", "")
+
+            uploaded_file = request.files.get("archivo")
+            if uploaded_file and uploaded_file.filename:
+                texto = uploaded_file.read().decode("utf-8")
 
 			# Limpiar archivos anteriores
 			if os.path.exists(archivo_salida):
@@ -719,15 +721,14 @@ def index():
 
 		# Si es GET, mostramos el formulario
 		return render_template_string("""
-		<h2>Generador de PDF de Canciones</h2>
-		<form method="post" enctype="multipart/form-data">
-    		<textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí..."></textarea><br>
-    		<label for="archivo">O sube un archivo de texto:</label>
-    		<input type="file" name="archivo" id="archivo"><br><br>
-    		<input type="submit" value="Generar PDF">
-</form>
-		""")
-
+        <h2>Generador de PDF de Canciones</h2>
+        <form method="post" enctype="multipart/form-data">
+            <textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí...">{{ texto }}</textarea><br>
+            <label for="archivo">O sube un archivo de texto:</label>
+            <input type="file" name="archivo" id="archivo"><br><br>
+            <input type="submit" value="Generar PDF">
+        </form>
+        """, texto=texto)
 	except Exception:
 		return f"<h3>Error inesperado:</h3><pre>{traceback.format_exc()}</pre>"
 # Ejecutar servidor seguro en Jupyter eliminado; usamos entrada estándar de Python/WSGI
@@ -738,4 +739,5 @@ def health():
 if __name__ == "__main__":
 	port = int(os.environ.get("PORT", "8000"))
 	app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+
 
