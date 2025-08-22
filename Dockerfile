@@ -1,10 +1,13 @@
-# Usar una imagen base de TeX Live completa y reciente
-FROM texlive/texlive:latest
+# Utiliza una imagen base de TeX Live
+FROM blang/latex:ubuntu
+
+# Instala Python y pip
+RUN apt-get update && apt-get install -y python3 python3-pip
 
 # Actualiza tlmgr
 RUN tlmgr update --self
 
-# Instala cada paquete de forma individual
+# Instala los paquetes de LaTeX
 RUN tlmgr install schemata
 RUN tlmgr install songs
 RUN tlmgr install imakeidx
@@ -32,4 +35,5 @@ EXPOSE 8000
 # Comando por defecto: usar gunicorn enlazado a $PORT
 # convert:app es el módulo:objeto WSGI
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+
 
