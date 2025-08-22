@@ -670,12 +670,19 @@ def index():
 		if request.method == "POST":
 			texto = request.form.get("texto", "")
 
+			uploaded_file = request.files.get("archivo")
+    		if uploaded_file and uploaded_file.filename:
+        		texto = uploaded_file.read().decode("utf-8")
+
 			# Limpiar archivos anteriores
 			if os.path.exists(archivo_salida):
 				os.remove(archivo_salida)
 			pdf_file = os.path.splitext(archivo_salida)[0] + ".pdf"
 			if os.path.exists(pdf_file):
 				os.remove(pdf_file)
+
+			if os.path.exists(pdf_file):
+    			return send_file(pdf_file, as_attachment=True, download_name="cancionero.pdf")
 
 			# 1️⃣ Procesar canciones
 			try:
@@ -725,9 +732,10 @@ def index():
 		# Si es GET, mostramos el formulario
 		return render_template_string("""
 		<h2>Generador de PDF de Canciones</h2>
-		<form method="post">
-			<textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí..."></textarea><br>
-			<input type="submit" value="Generar PDF">
+		<form method="post" enctype="multipart/form-data">
+    		<textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí...">{{ texto }}</textarea><br>
+    		<input type="file" name="archivo"><br>
+    		<input type="submit" value="Generar PDF">
 		</form>
 		""")
 
@@ -741,64 +749,3 @@ def health():
 if __name__ == "__main__":
 	port = int(os.environ.get("PORT", "8000"))
 	app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
