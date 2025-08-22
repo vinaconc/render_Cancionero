@@ -2,13 +2,18 @@
 
 % --- Configuración de codificación y idioma ---
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage{spanish}{babel}
 
 % --- Paquetes generales ---
 \usepackage{xcolor} % Necesario para \textcolor.
 \usepackage[chorded]{songs} % Esencial para tu cancionero.
 
-\usepackage{schemata} % <-- ¡RE-AÑADIDO PARA EL COMANDO \diagram!
+% --- REEMPLAZO DE SCHEMATA CON IMPLEMENTACIÓN PERSONALIZADA ---
+% Usamos solo paquetes estándar para evitar problemas en Render
+\usepackage{tikz} % Para crear diagramas personalizados
+\usepackage{varwidth} % Para manejar contenido de ancho variable
+
+% --- Paquetes adicionales ---
 \usepackage{pdfpages} % Para incluir PDFs como la portada.
 \usepackage[normalem]{ulem} % Para subrayado, si lo usas (ej. \uline).
 \usepackage{scrextend} % Necesario si usas \changefontsizes.
@@ -68,9 +73,40 @@
   \lineskip=1pt
 }
 
-% --- Comandos personalizados ---
-\newcommand\diagram[2]{\schema{\schemabox{#1}}{\schemabox{#2}}} % <-- ¡DEFINICIÓN DE \diagram!
-\newcommand\esquema[2]{\schema[closed]{#2}{\schemabox{#1}}} % Si no usas este comando, puedes eliminarlo.
+% --- COMANDOS PERSONALIZADOS REEMPLAZANDO SCHEMATA ---
+% Implementación personalizada del comando \diagram usando TikZ
+\newcommand\diagram[2]{%
+  \begin{center}
+  \begin{tikzpicture}[
+    box/.style={rectangle, draw=black, thick, minimum width=2cm, minimum height=1cm, align=center},
+    content/.style={rectangle, draw=black, thick, minimum width=14cm, minimum height=1cm, align=left, text width=13.5cm}
+  ]
+    \node[box] at (0,0) {#1};
+    \node[content] at (3,0) {#2};
+  \end{tikzpicture}
+  \end{center}
+}
+
+% Comando alternativo más simple sin TikZ (fallback)
+\newcommand\diagramsimple[2]{%
+  \noindent
+  \fbox{#1} \hspace{0.5cm} \fbox{\parbox{13.5cm}{#2}}
+}
+
+% Comando esquema alternativo
+\newcommand\esquema[2]{%
+  \begin{center}
+  \begin{tikzpicture}[
+    box/.style={rectangle, draw=black, thick, minimum width=2cm, minimum height=1cm, align=center},
+    content/.style={rectangle, draw=black, thick, minimum width=14cm, minimum height=1cm, align=left, text width=13.5cm}
+  ]
+    \node[box] at (0,0) {#1};
+    \node[content] at (3,0) {#2};
+  \end{tikzpicture}
+  \end{center}
+}
+
+% --- Resto de comandos personalizados ---
 \newcommand{\version}{}
 \newsongkey{v}{\def\version{}}
                {\def\version{Versión: #1\par}}
@@ -93,7 +129,7 @@
 \newsongkey{toc}
 {\def\toctitle{\resettitles\addtotoc\songtitle}}
 {\def\toctitle{\addtotoc{#1}}}
-\renewcommand\extendprelude{\showrefs\showauthors\toctitle {\bfseries\version}}
+\renewcommand{\extendprelude}{\showrefs\showauthors\toctitle {\bfseries\version}}
 
 \newcommand{\indexword}[1]{\textcolor{blue}{#1}\index{#1}}
 
@@ -111,7 +147,7 @@
 %\newsongkey{toc}
  % {\def\toctitle{\resettitles\addtotoc\songtitle}}
   %{\def\toctitle{\addtotoc{#1}}}
-%\renewcommand\extendprelude{\showrefs\showauthors\toctitle {\bfseries\version}}
+%\renewcommand{\extendprelude}{\showrefs\showauthors\toctitle {\bfseries\version}}
 
 %\newcommand{\indexword}[1]{\textcolor{blue}{#1}\index{#1}}
 
