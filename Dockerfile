@@ -1,10 +1,9 @@
-# Imagen base ligera con Python
+# --- Imagen base con Python ---
 FROM python:3.11-slim
 
-# Evitar prompts interactivos de APT
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar dependencias de LaTeX necesarias (incluye songs, schemata, hyperref, imakeidx, babel spanish), pdflatex y makeindex
+# --- Instala dependencias de LaTeX y utilidades ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         texlive-binaries \
@@ -15,42 +14,28 @@ RUN apt-get update && \
         texlive-lang-spanish \
         texlive-music \
         texlive-humanities \
+        makeindex \
         ca-certificates \
+        wget \
+        perl \
     && rm -rf /var/lib/apt/lists/*
 
-FROM texlive/texlive:latest
-
-# Instalar paquete schemata de TeX Live
-RUN tlmgr update --self && \
+# --- Instala schemata usando tlmgr ---
+RUN wget -qO- https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz | tar xz -C /tmp && \
+    tlmgr init-usertree && \
+    tlmgr update --self && \
     tlmgr install schemata
 
-# Utiliza una imagen base con TeX Live ya instalado
-FROM blang/latex:ubuntu
-
-# Instala el paquete 'schemata' de LaTeX
-# La mayoría de las imágenes ya tienen 'tlmgr' disponible
-RUN tlmgr install schemata
-RUN tlmgr install makeindex
-
-
+# --- Configura directorio de trabajo ---
 WORKDIR /app
-COPY . /app    
+COPY . /app
 
-# Crear directorio de la app
-WORKDIR /app
-
-# Copiar dependencias de Python e instalarlas
+# --- Instala dependencias de Python ---
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código y la plantilla
-COPY convert.py plantilla.tex /app/
-
-# Exponer el puerto (Render usará $PORT)
+# --- Exponer puerto para Render ---
 EXPOSE 8000
 
-# Comando por defecto: usar gunicorn enlazado a $PORT
-# convert:app es el módulo:objeto WSGI
+# --- Comando por defecto para Gunicorn ---
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
-
-
