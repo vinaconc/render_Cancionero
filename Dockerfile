@@ -1,56 +1,31 @@
-# Imagen base ligera con Python
-FROM python:3.11-slim
+FROM python:3.9-slim
 
-# Evitar prompts interactivos de APT
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Instalar dependencias de LaTeX necesarias (incluye songs, schemata, hyperref, imakeidx, babel spanish), pdflatex y makeindex
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        texlive-binaries \
-        texlive-latex-base \
-        texlive-latex-recommended \
-        texlive-latex-extra \
-        texlive-fonts-recommended \
-        texlive-lang-spanish \
-        texlive-music \
-        texlive-humanities \
-        ca-certificates \
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    texlive-full \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    texlive-lang-spanish \
+    texlive-science \
+    texlive-publishers \
+    makeindex \
+    ghostscript \
     && rm -rf /var/lib/apt/lists/*
 
-FROM texlive/texlive:latest
-
-# Instalar paquete schemata de TeX Live
-RUN tlmgr update --self && \
-    tlmgr install schemata
-
-# Utiliza una imagen base con TeX Live ya instalado
-FROM blang/latex:ubuntu
-
-# Instala el paquete 'schemata' de LaTeX
-# La mayoría de las imágenes ya tienen 'tlmgr' disponible
-RUN tlmgr install schemata
-RUN tlmgr install makeindex
-
-
-WORKDIR /app
-COPY . /app    
-
-# Crear directorio de la app
+# Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar dependencias de Python e instalarlas
-COPY requirements.txt /app/
+# Copiar archivos de requisitos
+COPY requirements.txt .
+
+# Instalar dependencias de Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código y la plantilla
-COPY convert.py plantilla.tex /app/
+# Copiar archivos del proyecto
+COPY . .
 
-# Exponer el puerto (Render usará $PORT)
+# Exponer puerto
 EXPOSE 8000
 
-# Comando por defecto: usar gunicorn enlazado a $PORT
-# convert:app es el módulo:objeto WSGI
-CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
-
-
+# Comando de inicio
+CMD ["python", "convert.py"]
