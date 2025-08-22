@@ -1,30 +1,24 @@
-# --- Imagen base con TeX Live completo ---
-FROM blang/latex:ubuntu
+# Usar una imagen base de TeX Live completa y reciente
+FROM texlive/texlive:latest
 
-# --- Evitar prompts interactivos ---
-ENV DEBIAN_FRONTEND=noninteractive
+# Actualiza tlmgr
+RUN tlmgr update --self
 
-# --- Instalar Python 3 y pip ---
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip ca-certificates wget perl && \
-    rm -rf /var/lib/apt/lists/*
+# Instala cada paquete de forma individual
+RUN tlmgr install schemata
+RUN tlmgr install songs
+RUN tlmgr install imakeidx
+RUN tlmgr install hyperref
+RUN tlmgr install babel-spanish
+RUN tlmgr install xcolor
+RUN tlmgr install geometry
+RUN tlmgr install pdfpages
 
-# --- Actualizar tlmgr y asegurar schemata ---
-RUN tlmgr update --self && \
-    tlmgr install schemata songs imakeidx hyperref babel-spanish xcolor geometry pdfpages
+# Copia los archivos de tu proyecto
+COPY . /app
 
-# --- Crear directorio de trabajo ---
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# --- Copiar dependencias Python e instalarlas ---
-COPY requirements.txt /app/
-RUN pip3 install --no-cache-dir -r requirements.txt
-
-# --- Copiar el código de la app ---
-COPY . /app/
-
-# --- Exponer el puerto para Render ---
-EXPOSE 8000
-
-# --- Comando por defecto para ejecutar Gunicorn ---
-CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+# Comando de inicio de tu aplicación
+CMD ["python", "app.py"]
