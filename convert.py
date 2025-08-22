@@ -1,15 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
 from flask import Flask, request, render_template_string, send_file
 import traceback
 import os
@@ -733,10 +721,11 @@ def index():
 		return render_template_string("""
 		<h2>Generador de PDF de Canciones</h2>
 		<form method="post" enctype="multipart/form-data">
-    		<textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí...">{{ texto }}</textarea><br>
-    		<input type="file" name="archivo"><br>
+    		<textarea name="texto" rows="20" cols="80" placeholder="Escribe tus canciones aquí..."></textarea><br>
+    		<label for="archivo">O sube un archivo de texto:</label>
+    		<input type="file" name="archivo" id="archivo"><br><br>
     		<input type="submit" value="Generar PDF">
-		</form>
+</form>
 		""")
 
 	except Exception:
@@ -749,3 +738,4 @@ def health():
 if __name__ == "__main__":
 	port = int(os.environ.get("PORT", "8000"))
 	app.run(host="0.0.0.0", port=port, debug=False, threaded=True)
+
