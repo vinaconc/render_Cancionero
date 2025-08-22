@@ -1,17 +1,38 @@
-FROM blang/latex:ubuntu
+# --- Imagen base con Python ---
+FROM python:3.11-slim
 
+# Evitar prompts interactivos
+ENV DEBIAN_FRONTEND=noninteractive
+
+# --- Instalar LaTeX y dependencias necesarias ---
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        texlive-latex-base \
+        texlive-latex-recommended \
+        texlive-latex-extra \
+        texlive-fonts-recommended \
+        texlive-lang-spanish \
+        texlive-music \
+        texlive-humanities \
+        texlive-schemata \
+        makeindex \
+        ca-certificates \
+        wget \
+        perl \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- Crear directorio de trabajo ---
 WORKDIR /app
-COPY . /app
 
-# Instalar tlmgr si no está y el paquete schemata
-RUN tlmgr update --self \
-    && tlmgr install schemata
-
-# Copiar Python y dependencias
+# --- Copiar dependencias de Python ---
 COPY requirements.txt /app/
-RUN apt-get update && apt-get install -y python3 python3-pip \
-    && pip3 install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
+# --- Copiar el código y plantilla ---
+COPY . /app/
+
+# --- Exponer puerto para Render ---
 EXPOSE 8000
 
+# --- Comando por defecto para Gunicorn ---
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
