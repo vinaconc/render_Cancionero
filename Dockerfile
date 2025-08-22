@@ -1,5 +1,3 @@
-Docker file
-
 # Imagen base ligera con Python
 FROM python:3.11-slim
 
@@ -54,4 +52,5 @@ EXPOSE 8000
 # Comando por defecto: usar gunicorn enlazado a $PORT
 # convert:app es el módulo:objeto WSGI
 CMD ["bash", "-lc", "exec gunicorn --bind 0.0.0.0:${PORT:-8000} --workers 2 --threads 4 --timeout 180 convert:app"]
+
 
